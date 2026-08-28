@@ -15,8 +15,8 @@ vibecoding.aithinglab.com {
 		reverse_proxy 172.28.0.1:8092
 	}
 
-	# lokigrafana
-	handle_path /lokigrafana/* {
+	# lokigrafana (Grafana с GF_SERVER_SERVE_FROM_SUB_PATH=true — префикс НЕ срезаем)
+	handle /lokigrafana/* {
 		reverse_proxy 172.28.0.1:8093
 	}
 
