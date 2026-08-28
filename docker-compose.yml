@@ -7,6 +7,11 @@ services:
     command: -config.file=/etc/loki/local-config.yaml
     volumes:
       - loki-data:/loki
+    # default — для Grafana внутри этого же compose; loki-net — общая сеть,
+    # через которую логи пушат другие compose-проекты (например vibecoding-grafana)
+    networks:
+      - default
+      - loki-net
 
   grafana:
     image: grafana/grafana:10.4.2
@@ -32,3 +37,7 @@ services:
 volumes:
   loki-data:
   grafana-data:
+
+networks:
+  loki-net:
+    external: true
