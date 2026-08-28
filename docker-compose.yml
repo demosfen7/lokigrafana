@@ -1,0 +1,34 @@
+# lokigrafana — учебный стек логирования (Loki + Grafana), пользователь vibecoding (rootless Docker)
+services:
+  loki:
+    image: grafana/loki:2.9.6
+    container_name: vibecoding-lokigrafana-loki
+    restart: unless-stopped
+    command: -config.file=/etc/loki/local-config.yaml
+    volumes:
+      - loki-data:/loki
+
+  grafana:
+    image: grafana/grafana:10.4.2
+    container_name: vibecoding-lokigrafana-grafana
+    restart: unless-stopped
+    depends_on:
+      - loki
+    environment:
+      # стандартные учётные данные Grafana — заданы явно, чтобы не гадать при первом входе
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+      GF_USERS_ALLOW_SIGN_UP: "false"
+      # стек висит за Caddy на суб-пути /lokigrafana/
+      GF_SERVER_SERVE_FROM_SUB_PATH: "true"
+      GF_SERVER_ROOT_URL: "https://vibecoding.aithinglab.com/lokigrafana/"
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./provisioning/datasources:/etc/grafana/provisioning/datasources:ro
+    # Grafana обращается к Loki по имени сервиса в общей docker-сети compose (http://loki:3100)
+    ports:
+      - "172.28.0.1:8093:3000"
+
+volumes:
+  loki-data:
+  grafana-data:
